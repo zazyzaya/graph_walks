@@ -3,7 +3,7 @@ import os.path as osp
 
 import torch
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 for library in [
         '_version', '_temporal_rw', '_continuous_trw', '_rw'
@@ -29,16 +29,16 @@ if torch.version.cuda is not None and cuda_version != -1:  # pragma: no cover
 
     if t_major != major:
         raise RuntimeError(
-            f'Detected that PyTorch and temporal_rw were compiled with '
+            f'Detected that PyTorch and graph_walks were compiled with '
             f'different CUDA versions. PyTorch has CUDA version '
-            f'{t_major}.{t_minor} and temporal_rw has CUDA version '
-            f'{major}.{minor}. Please reinstall the temporal_rw that '
+            f'{t_major}.{t_minor} and graph_walks has CUDA version '
+            f'{major}.{minor}. Please reinstall the graph_walks that '
             f'matches your PyTorch install.')
 
 from .connector import temporal_rw, rw
 
 __all__ = [
     'temporal_rw',
-    'rw'
+    'rw',
     '__version__',
 ]

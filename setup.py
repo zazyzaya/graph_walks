@@ -11,7 +11,7 @@ from torch.__config__ import parallel_info
 from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
                                        CUDAExtension)
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 URL = 'https://github.com/zazyzaya/temporal_rw'
 
 WITH_CUDA = False
@@ -41,10 +41,12 @@ def get_extensions():
         define_macros = [('WITH_PYTHON', None)]
         undef_macros = []
 
+        extra_compile_args = {'cxx': ['-O2']}
+        
         if sys.platform == 'win32':
             define_macros += [('torchcluster_EXPORTS', None)]
-
-        extra_compile_args = {'cxx': ['-O2']}
+            extra_compile_args['cxx'] += ['/std:c++20']
+            
         if not os.name == 'nt':  # Not on Windows:
             extra_compile_args['cxx'] += ['-Wno-sign-compare']
         extra_link_args = ['-s']
@@ -95,7 +97,7 @@ def get_extensions():
 
         Extension = CppExtension if suffix == 'cpu' else CUDAExtension
         extension = Extension(
-            f'temporal_walks._{name}_{suffix}',
+            f'graph_walks._{name}_{suffix}',
             sources,
             include_dirs=[extensions_dir],
             define_macros=define_macros,

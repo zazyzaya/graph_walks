@@ -75,17 +75,17 @@ def rw(rowptr: Tensor,
     col: Tensor,
     start: Tensor,
     walk_length: int,
-    return_edge_indices: bool = False
+    return_edge_indices: bool = False,
+    p = 1.0, q = 1.0 
 ) -> Union[Tensor, Tuple[Tensor, Tensor]]:
     """Samples random walks of length :obj:`walk_length` from all node indices
-    in :obj:`start` in the graph given by :obj:`(row, col)` s.t. each edge is
-    older than the previous one sampled.
+    in :obj:`start` in the graph given by :obj:`(row, col)`
 
     Clone of old torch-cluster rw function that's no longer maintained 
     Necessitated because Pyg-Lib RW does not return edge indices 
 
     Args:
-        row (LongTensor): Source nodes.
+        rowptr (LongTensor): Source nodes index pointer.
         col (LongTensor): Target nodes.
         start (LongTensor): Nodes from where random walks start.
         walk_length (int): The walk length.
@@ -95,7 +95,7 @@ def rw(rowptr: Tensor,
 
     :rtype: :class:`LongTensor`
     """
-    node_seq, edge_seq = torch.ops.graph_walks.random_walk(rowptr, col, start, walk_length)
+    node_seq, edge_seq = torch.ops.graph_walks.random_walk(rowptr, col, start, walk_length, p,q)
 
     if return_edge_indices:
         return node_seq, edge_seq

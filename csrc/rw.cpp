@@ -21,15 +21,15 @@ PyMODINIT_FUNC PyInit__rw_cpu(void) { return NULL; }
 
 GRAPH_WALKS_API std::tuple<torch::Tensor, torch::Tensor>
 random_walk(torch::Tensor rowptr, torch::Tensor col, torch::Tensor start,
-            int64_t walk_length) {
+            int64_t walk_length, const double p, const double q) {
   if (rowptr.device().is_cuda()) {
 #ifdef WITH_CUDA
-    return random_walk_cuda(rowptr, col, start, walk_length);
+    return random_walk_cuda(rowptr, col, start, walk_length, p,q);
 #else
     AT_ERROR("Not compiled with CUDA support");
 #endif
   } else {
-    return random_walk_cpu(rowptr, col, start, walk_length);
+    return random_walk_cpu(rowptr, col, start, walk_length, p,q);
   }
 }
 
