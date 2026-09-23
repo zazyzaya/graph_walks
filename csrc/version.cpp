@@ -23,8 +23,8 @@ PyMODINIT_FUNC PyInit__version_cpu(void) { return NULL; }
 #endif
 #endif
 
-namespace temporal_rw {
-TEMPORAL_RW_API int64_t cuda_version() noexcept {
+namespace graph_walks {
+GRAPH_WALKS_API int64_t cuda_version() noexcept {
 #ifdef WITH_CUDA
 #ifdef USE_ROCM
   return HIP_VERSION;
@@ -35,7 +35,7 @@ TEMPORAL_RW_API int64_t cuda_version() noexcept {
   return -1;
 #endif
 }
-} // namespace temporal_rw
+} // namespace graph_walks
 
 static auto registry = torch::RegisterOperators().op(
-    "temporal_walks::cuda_version", [] { return temporal_rw::cuda_version(); });
+    "graph_walks::cuda_version", [] { return graph_walks::cuda_version(); });

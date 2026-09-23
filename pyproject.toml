@@ -2,10 +2,10 @@
 requires = ["setuptools", "torch"]
 build-backend = "setuptools.build_meta"
 [project]
-name = "temporal_rw_iking5"
-version = "0.0.1"
+name = "graph_walks"
+version = "0.0.2"
 authors = [
-  { name="Isaiah J. King", email="iking5@gwu.edu" },
+  { name="Isaiah J. King", email="iking@american.edu" },
 ]
 description = "A set of functions for temporally biased random walks in torch"
 readme = "README.md"

@@ -19,7 +19,7 @@ PyMODINIT_FUNC PyInit__temporal_rw_cpu(void) { return NULL; }
 #endif
 #endif
 
-TEMPORAL_RW_API std::tuple<torch::Tensor, torch::Tensor>
+GRAPH_WALKS_API std::tuple<torch::Tensor, torch::Tensor>
 temporal_random_walk(torch::Tensor rowptr, torch::Tensor col, torch::Tensor ts, torch::Tensor start,
             int64_t walk_length, int64_t t_start, int64_t t_end, bool reverse) {
   if (rowptr.device().is_cuda()) {
@@ -34,4 +34,4 @@ temporal_random_walk(torch::Tensor rowptr, torch::Tensor col, torch::Tensor ts, 
 }
 
 static auto registry =
-    torch::RegisterOperators().op("temporal_walks::temporal_random_walk", &temporal_random_walk);
+    torch::RegisterOperators().op("graph_walks::temporal_random_walk", &temporal_random_walk);
