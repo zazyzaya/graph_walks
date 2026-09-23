@@ -20,7 +20,7 @@ PyMODINIT_FUNC PyInit__continuous_trw_cpu(void) { return NULL; }
 #endif
 
 
-TEMPORAL_RW_API std::tuple<torch::Tensor, torch::Tensor>
+GRAPH_WALKS_API std::tuple<torch::Tensor, torch::Tensor>
 continuous_trw(torch::Tensor rowptr, torch::Tensor col, torch::Tensor ts, torch::Tensor start,
     int64_t walk_length, torch::Tensor t_start, torch::Tensor t_end, bool reverse) {
     if (rowptr.device().is_cuda()) {

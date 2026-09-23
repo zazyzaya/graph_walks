@@ -123,11 +123,11 @@ if torch.cuda.is_available() and torch.version.hip:
     include_package_data = False
 
 setup(
-    name='temporal_walks',
+    name='graph_walks',
     version=__version__,
     description=('PyTorch extension for optimized temporal random walks through graphs'),
     author='Isaiah J. King',
-    author_email='iking5@gwu.edu',
+    author_email='iking@american.edu',
     url=URL,
     keywords=[
         'pytorch',
@@ -135,7 +135,7 @@ setup(
         'graph-neural-networks',
         'random-walk',
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.10',
     install_requires=install_requires,
     extras_require={
         'test': test_requires,
