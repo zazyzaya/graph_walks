@@ -38,4 +38,4 @@ TEMPORAL_RW_API int64_t cuda_version() noexcept {
 } // namespace temporal_rw
 
 static auto registry = torch::RegisterOperators().op(
-    "temporal_walks::cuda_version", [] { return temporal_rw::cuda_version(); });
+    "graph_walks::cuda_version", [] { return temporal_rw::cuda_version(); });

@@ -35,4 +35,4 @@ continuous_trw(torch::Tensor rowptr, torch::Tensor col, torch::Tensor ts, torch:
   }
 
 static auto registry =
-  torch::RegisterOperators().op("temporal_walks::continuous_trw", &continuous_trw);
+  torch::RegisterOperators().op("graph_walks::continuous_trw", &continuous_trw);

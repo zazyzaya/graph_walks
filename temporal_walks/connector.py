@@ -31,14 +31,8 @@ def temporal_rw(
         ts (LongTensor): Timestamp of edges.
         start (LongTensor): Nodes from where random walks start.
         walk_length (int): The walk length.
-        p (float, optional): Likelihood of immediately revisiting a node in the
-            walk. (default: :obj:`1`)
-        q (float, optional): Control parameter to interpolate between
-            breadth-first strategy and depth-first strategy (default: :obj:`1`)
-        coalesced (bool, optional): If set to :obj:`True`, will coalesce/sort
-            the graph given by :obj:`(row, col)` according to :obj:`row`.
-            (default: :obj:`True`)
-        num_nodes (int, optional): The number of nodes. (default: :obj:`None`)
+        min_ts (int or LongTensor): Minimal value of ts to start walks at
+        max_ts (int or LongTensor): Maximal value of ts to not walk past 
         return_edge_indices (bool, optional): Whether to additionally return
             the indices of edges traversed during the random walk.
             (default: :obj:`False`)
@@ -54,7 +48,7 @@ def temporal_rw(
         if max_ts is None:
             max_ts = 0 if not reverse else ts.max().item()
 
-        node_seq, edge_seq = torch.ops.temporal_walks.temporal_random_walk(
+        node_seq, edge_seq = torch.ops.graph_walks.temporal_random_walk(
             rowptr, col, ts, start, walk_length, min_ts, max_ts, reverse)
 
     # Tensor with individual min/max_ts used per-node in the walk
@@ -69,8 +63,39 @@ def temporal_rw(
             val = 0 if not reverse else ts.max().item()
             max_ts = torch.full_like(col, val)
 
-        node_seq, edge_seq = torch.ops.temporal_walks.continuous_trw(
+        node_seq, edge_seq = torch.ops.graph_walks.continuous_trw(
             rowptr, col, ts, start, walk_length, min_ts, max_ts, reverse)
+
+    if return_edge_indices:
+        return node_seq, edge_seq
+
+    return node_seq
+
+def rw(rowptr: Tensor,
+    col: Tensor,
+    start: Tensor,
+    walk_length: int,
+    return_edge_indices: bool = False
+) -> Union[Tensor, Tuple[Tensor, Tensor]]:
+    """Samples random walks of length :obj:`walk_length` from all node indices
+    in :obj:`start` in the graph given by :obj:`(row, col)` s.t. each edge is
+    older than the previous one sampled.
+
+    Clone of old torch-cluster rw function that's no longer maintained 
+    Necessitated because Pyg-Lib RW does not return edge indices 
+
+    Args:
+        row (LongTensor): Source nodes.
+        col (LongTensor): Target nodes.
+        start (LongTensor): Nodes from where random walks start.
+        walk_length (int): The walk length.
+        return_edge_indices (bool, optional): Whether to additionally return
+            the indices of edges traversed during the random walk.
+            (default: :obj:`False`)
+
+    :rtype: :class:`LongTensor`
+    """
+    node_seq, edge_seq = torch.ops.graph_walks.random_walk(rowptr, col, start, walk_length)
 
     if return_edge_indices:
         return node_seq, edge_seq
