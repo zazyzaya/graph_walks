@@ -13,57 +13,36 @@ __device__ int64_t binary_search_min_cuda(const int64_t tgt,
                                  const int64_t st_idx,
                                  const int64_t en_idx,
                                  const int64_t *ts) {
-  /*
-    Return lowest idx of ts that is >= tgt
-    Assumes ts is sorted between ts[start] and ts[end]
+  int64_t lo = st_idx;
+  int64_t hi = en_idx;
 
-    Rewritten as a loop instead of recursion for performance improvement
-  */
-  // Convert from const
-  int st = st_idx;
-  int en = en_idx;
-
-  while (en-st > 1) {
-    auto len = en-st;
-    auto half = len >> 1;
-    auto val_at_half = ts[st+half];
-
-    if (val_at_half >= tgt) {
-        en = en-half;
+  while (lo < hi) {
+    const int64_t mid = lo + ((hi - lo) >> 1);
+    if (ts[mid] < tgt) {
+      lo = mid + 1;
     } else {
-        st = st+half;
+      hi = mid;
     }
   }
-
-  if (ts[st] >= tgt) {
-    return st;
-  }
-  return en;
+  return lo;
 }
 
 __device__ int64_t binary_search_max_cuda(const int64_t tgt,
-                                          const int64_t st_idx,
-                                          const int64_t en_idx,
-                                          const int64_t *ts) {
-  int st = st_idx;
-  int en = en_idx;
+                                 const int64_t st_idx,
+                                 const int64_t en_idx,
+                                 const int64_t *ts) {
+  int64_t lo = st_idx;
+  int64_t hi = en_idx;
 
-  while (en-st > 1) {
-    auto len = en-st;
-    auto half = len >> 1;
-    auto val_at_half = ts[st+half];
-
-    if (val_at_half <= tgt) {
-        st = st+half;
+  while (lo < hi) {
+    const int64_t mid = lo + ((hi - lo) >> 1);
+    if (ts[mid] <= tgt) {
+      lo = mid + 1;
     } else {
-        en = en-half;
+      hi = mid;
     }
   }
-
-  if (ts[en] <= tgt) {
-    return en;
-  }
-  return st;
+  return lo;
 }
 
 __global__ void continuous_uniform_sampling_kernel(const int64_t *rowptr,

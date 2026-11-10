@@ -5,56 +5,56 @@
 #include "utils.h"
 
 
-int64_t binary_search_min_cpu(const int64_t tgt, const int64_t st_idx, const int64_t en_idx, const int64_t *ts) {
+int64_t binary_search_min_cpu(const int64_t tgt,
+                                 const int64_t st_idx,
+                                 const int64_t en_idx,
+                                 const int64_t *ts) {
   /*
-    Return lowest idx of ts that is >= tgt
-    Assumes ts is sorted between ts[start] and ts[end]
+    First idx in [st_idx, en_idx) with ts[idx] >= tgt, or en_idx if there is none.
+    Assumes ts is sorted ascending on [st_idx, en_idx); never reads outside that range
+    (the previous version read ts[st_idx] of an empty row, i.e. the next row or past the array).
   */
-  int st = st_idx;
-  int en = en_idx;
+  int64_t lo = st_idx;
+  int64_t hi = en_idx;
 
-  while (en-st > 1) {
-    auto len = en-st;
-    auto half = len >> 1;
-    auto val_at_half = ts[st+half];
-
-    if (val_at_half >= tgt) {
-        en = en-half;
+  while (lo < hi) {
+    const int64_t mid = lo + ((hi - lo) >> 1);
+    if (ts[mid] < tgt) {
+      lo = mid + 1;
     } else {
-        st = st+half;
+      hi = mid;
     }
   }
-
-  if (ts[st] >= tgt) {
-    return st;
-  }
-  return en;
+  return lo;
 }
 
-int64_t binary_search_max_cpu(const int64_t tgt, const int64_t st_idx, const int64_t en_idx, const int64_t *ts) {
+int64_t binary_search_max_cpu(const int64_t tgt,
+                                 const int64_t st_idx,
+                                 const int64_t en_idx,
+                                 const int64_t *ts) {
   /*
-    Return highest idx of ts that is <= tgt
-    Assumes ts is sorted between ts[start] and ts[end]
+    One past the last idx in [st_idx, en_idx) with ts[idx] <= tgt (st_idx if there is none),
+    i.e. the EXCLUSIVE end of the edges at or before tgt. Every caller assigns the result to
+    row_end and samples from [row_start, row_end).
+
+    The previous version returned the INCLUSIVE index of that edge, so the most recent edge in
+    the window could never be sampled, and it decided between its two candidates by reading
+    ts[en_idx] -- the first timestamp of the next row, or one past the end of the array. A row
+    whose only candidate lay after tgt was therefore returned whenever the next row started at
+    or before tgt.
   */
-  int st = st_idx;
-  int en = en_idx;
+  int64_t lo = st_idx;
+  int64_t hi = en_idx;
 
-  while (en-st > 1) {
-    auto len = en-st;
-    auto half = len >> 1;
-    auto val_at_half = ts[st+half];
-
-    if (val_at_half <= tgt) {
-        st = st+half;
+  while (lo < hi) {
+    const int64_t mid = lo + ((hi - lo) >> 1);
+    if (ts[mid] <= tgt) {
+      lo = mid + 1;
     } else {
-        en = en-half;
+      hi = mid;
     }
   }
-
-  if (ts[en] <= tgt) {
-    return en;
-  }
-  return st;
+  return lo;
 }
 
 void uniform_sampling(const int64_t *rowptr, const int64_t *col, const int64_t *ts,

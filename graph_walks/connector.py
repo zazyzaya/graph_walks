@@ -31,8 +31,14 @@ def temporal_rw(
         ts (LongTensor): Timestamp of edges.
         start (LongTensor): Nodes from where random walks start.
         walk_length (int): The walk length.
-        min_ts (int or LongTensor): Minimal value of ts to start walks at
-        max_ts (int or LongTensor): Maximal value of ts to not walk past 
+        min_ts (int or LongTensor): Earliest timestamp a walk may use (inclusive). 0 or None
+            means no lower bound. A tensor gives one bound per start node.
+        max_ts (int or LongTensor): Latest timestamp a walk may use (inclusive). For forward
+            walks 0 or None means no upper bound; reverse walks always start from max_ts
+            (None = the latest timestamp in the graph).
+        reverse (bool): Walk backwards in time: each edge is at or before the previous one.
+            The walk still follows OUT-edges of the current node (rowptr/col as given); to walk
+            against edge direction, pass the CSR of the reversed graph.
         return_edge_indices (bool, optional): Whether to additionally return
             the indices of edges traversed during the random walk.
             (default: :obj:`False`)
@@ -58,10 +64,10 @@ def temporal_rw(
                 "`max_ts` and `min_ts` must both be Tensors, both be ints, or one or both may be `None`"
 
         if min_ts is None:
-            min_ts = torch.zeros_like(col)
+            min_ts = torch.zeros_like(start)
         if max_ts is None:
             val = 0 if not reverse else ts.max().item()
-            max_ts = torch.full_like(col, val)
+            max_ts = torch.full_like(start, val)
 
         node_seq, edge_seq = torch.ops.graph_walks.continuous_trw(
             rowptr, col, ts, start, walk_length, min_ts, max_ts, reverse)
